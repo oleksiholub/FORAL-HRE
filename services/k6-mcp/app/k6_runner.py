@@ -6,7 +6,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
-DURATION_RE = re.compile(r"^d+(ms|s|m)$")
+DURATION_RE = re.compile(r"^\d+(ms|s|m)$")
 
 
 @dataclass(frozen=True)
