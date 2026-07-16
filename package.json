@@ -1,0 +1,21 @@
+json
+{
+  "name": "foral-hre",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FORAL HRE QA and testing infrastructure bootstrap",
+  "type": "module",
+  "workspaces": [
+    "services/playwright-mcp"
+  ],
+  "scripts": {
+    "test:node": "npm --workspace services/playwright-mcp test",
+    "lint:node": "npm --workspace services/playwright-mcp run lint",
+    "test": "npm run test:node",
+    "lint": "npm run lint:node"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}
