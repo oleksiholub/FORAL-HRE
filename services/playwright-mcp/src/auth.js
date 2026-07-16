@@ -17,7 +17,7 @@ export function extractApiKey(headers = {}) {
   }
 
   const value = authorization.trim();
-  const bearer = value.match(/^Bearers\\s+(.+)$/i);
+  const bearer = value.match(/^Bearer\\s+(.+)$/i);
   if (bearer?.[1]) {
     return bearer[1].trim();
   }
