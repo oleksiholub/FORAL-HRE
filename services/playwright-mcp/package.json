@@ -1,0 +1,16 @@
+{
+  "name": "@foral-hre/playwright-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FORAL HRE Playwright remote MCP gateway",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test",
+    "lint": "node --check src/index.js && node --check test/health.test.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
