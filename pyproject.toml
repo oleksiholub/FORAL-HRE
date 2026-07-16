@@ -4,23 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "foral-hre-k6-mcp"
-version = "0.1.0"
-description = "FORAL HRE k6 MCP gateway bootstrap"
+version = "0.2.0"
+description = "FORAL HRE k6 remote MCP gateway bootstrap"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115,<1.0",
-  "uvicorn[standard]>=0.34,<1.0"
+  "uvicorn[standard]>=0.34,<1.0",
+  "mcp>=1.6.0,<2.0",
+  "pydantic>=2.10,<3.0",
+  "httpx>=0.28,<1.0"
 ]
 
 [project.optional-dependencies]
 dev = [
-  "httpx>=0.28,<1.0",
-  "pytest>=8.3,<9.0"
+  "pytest>=8.3,<9.0",
+  "pytest-asyncio>=0.25,<1.0"
 ]
+
+[tool.setuptools.packages.find]
+where = ["services/k6-mcp"]
+include = ["app*"]
 
 [tool.pytest.ini_options]
 testpaths = ["services/k6-mcp/tests"]
 pythonpath = ["services/k6-mcp"]
+asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 100
