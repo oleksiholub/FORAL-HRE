@@ -35,10 +35,10 @@ steps:
     args:
       - "build"
       - "-f"
-      - "services/playwright-mcp/Dockerfile"
+      - "Dockerfile" # <-- Убираем префикс папки, Dockerfile лежит прямо в корне контекста!
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
-      - "services/playwright-mcp" # <-- Контекстом сборки делаем папку сервиса
+      - "services/playwright-mcp"
 
   - id: "push-playwright-image"
     name: "gcr.io/cloud-builders/docker"
@@ -51,10 +51,10 @@ steps:
     args:
       - "build"
       - "-f"
-      - "services/k6-mcp/Dockerfile"
+      - "Dockerfile" # <-- Тоже убираем префикс папки
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
-      - "services/k6-mcp" # <-- Контекстом сборки делаем папку сервиса
+      - "services/k6-mcp"
 
   - id: "push-k6-service-image"
     name: "gcr.io/cloud-builders/docker"
@@ -67,10 +67,10 @@ steps:
     args:
       - "build"
       - "-f"
-      - "services/k6-mcp/Dockerfile.job" # <-- Указали точный путь к файлу
+      - "Dockerfile.job" # <-- Тоже убираем префикс папки
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
-      - "services/k6-mcp" # <-- Контекстом сборки делаем папку сервиса
+      - "services/k6-mcp"
 
   - id: "push-k6-job-image"
     name: "gcr.io/cloud-builders/docker"
