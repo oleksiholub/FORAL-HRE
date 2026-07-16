@@ -24,6 +24,7 @@ steps:
     args:
       - "-lc"
       - |
+        cd services/k6-mcp # <-- Переходим в директорию питоновского микросервиса
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
         export K6_MCP_API_KEY=test-k6-key
@@ -35,7 +36,7 @@ steps:
     args:
       - "build"
       - "-f"
-      - "Dockerfile" # <-- Убираем префикс папки, Dockerfile лежит прямо в корне контекста!
+      - "Dockerfile"
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
       - "services/playwright-mcp"
@@ -51,7 +52,7 @@ steps:
     args:
       - "build"
       - "-f"
-      - "Dockerfile" # <-- Тоже убираем префикс папки
+      - "Dockerfile"
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
       - "services/k6-mcp"
@@ -67,7 +68,7 @@ steps:
     args:
       - "build"
       - "-f"
-      - "Dockerfile.job" # <-- Тоже убираем префикс папки
+      - "Dockerfile.job"
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
       - "services/k6-mcp"
