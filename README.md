@@ -44,6 +44,8 @@ pip install -e ".[dev]"
 pytest
 ```
 
+Дерево проекта
+
 ```text
 FORAL-HRE/
 ├── .gitignore
