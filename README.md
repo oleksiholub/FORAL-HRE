@@ -44,7 +44,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Дерево проекта
+## Дерево проекта
 
 ```text
 FORAL-HRE/
