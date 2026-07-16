@@ -5,6 +5,7 @@ steps:
     args:
       - "-lc"
       - |
+        set -euo pipefail
         npm install
 
   - id: "node-test-playwright"
@@ -13,6 +14,7 @@ steps:
     args:
       - "-lc"
       - |
+        set -euo pipefail
         export PLAYWRIGHT_MCP_API_KEY=test-playwright-key
         export PLAYWRIGHT_MCP_REQUIRE_AUTH=true
         npm run test:node
@@ -24,28 +26,33 @@ steps:
     args:
       - "-lc"
       - |
+        set -euo pipefail
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
         export K6_MCP_API_KEY=test-k6-key
         export K6_MCP_REQUIRE_AUTH=true
         pytest -q
 
+  # Playwright Dockerfile expects context = services/playwright-mcp
+  # (COPY package.json / COPY src)
   - id: "build-playwright-image"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "build"
       - "-f"
-      - "services/playwright-mcp/Dockerfile" # Путь к файлу ищется из корня
+      - "services/playwright-mcp/Dockerfile"
       - "-t"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
-      - "services/playwright-mcp" # А контекстом сборки остаётся папка сервиса
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${_IMAGE_TAG}"
+      - "services/playwright-mcp"
 
   - id: "push-playwright-image"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "push"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${_IMAGE_TAG}"
 
+  # k6 Dockerfiles COPY paths like services/k6-mcp/...
+  # so build context must be the repository root (.)
   - id: "build-k6-service-image"
     name: "gcr.io/cloud-builders/docker"
     args:
@@ -53,14 +60,14 @@ steps:
       - "-f"
       - "services/k6-mcp/Dockerfile"
       - "-t"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
-      - "services/k6-mcp"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${_IMAGE_TAG}"
+      - "."
 
   - id: "push-k6-service-image"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "push"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${_IMAGE_TAG}"
 
   - id: "build-k6-job-image"
     name: "gcr.io/cloud-builders/docker"
@@ -69,23 +76,26 @@ steps:
       - "-f"
       - "services/k6-mcp/Dockerfile.job"
       - "-t"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
-      - "services/k6-mcp"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${_IMAGE_TAG}"
+      - "."
 
   - id: "push-k6-job-image"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "push"
-      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${_IMAGE_TAG}"
 
 images:
-  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
-  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
-  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${_IMAGE_TAG}"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${_IMAGE_TAG}"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${_IMAGE_TAG}"
 
 substitutions:
   _REGION: "europe-central2"
   _AR_REPOSITORY: "foral-hre"
+  # For manual submit: pass --substitutions=_IMAGE_TAG=$(git rev-parse --short HEAD)
+  # For later Cloud Build triggers: map commit short SHA into _IMAGE_TAG
+  _IMAGE_TAG: "manual"
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  machineType: "E2_HIGHCPU_8"
