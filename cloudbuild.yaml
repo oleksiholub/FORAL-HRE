@@ -24,9 +24,8 @@ steps:
     args:
       - "-lc"
       - |
-        cd services/k6-mcp # <-- Переходим в директорию питоновского микросервиса
         python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        pip install -e ".[dev]" # Установка из корня, где лежит pyproject.toml
         export K6_MCP_API_KEY=test-k6-key
         export K6_MCP_REQUIRE_AUTH=true
         pytest -q
