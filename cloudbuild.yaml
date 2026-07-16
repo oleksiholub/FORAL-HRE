@@ -67,7 +67,7 @@ steps:
     args:
       - "build"
       - "-f"
-      - "services/k6-mcp/Dockerfile.job"
+      - "Dockerfile.job"
       - "-t"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
       - "."
