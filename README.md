@@ -33,6 +33,16 @@ npm install
 npm run test:node
 npm run lint:node
 ```
+## Локальный запуск и тестирование
+
+Чтобы настроить окружение и запустить тесты, выполните в терминале следующие команды:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
 
 ```text
 FORAL-HRE/
