@@ -1,0 +1,91 @@
+steps:
+  - id: "node-install"
+    name: "node:22"
+    entrypoint: "bash"
+    args:
+      - "-lc"
+      - |
+        npm install
+
+  - id: "node-test-playwright"
+    name: "node:22"
+    entrypoint: "bash"
+    args:
+      - "-lc"
+      - |
+        export PLAYWRIGHT_MCP_API_KEY=test-playwright-key
+        export PLAYWRIGHT_MCP_REQUIRE_AUTH=true
+        npm run test:node
+        npm run lint:node
+
+  - id: "python-install-test"
+    name: "python:3.12"
+    entrypoint: "bash"
+    args:
+      - "-lc"
+      - |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+        export K6_MCP_API_KEY=test-k6-key
+        export K6_MCP_REQUIRE_AUTH=true
+        pytest -q
+
+  - id: "build-playwright-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "services/playwright-mcp/Dockerfile"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
+      - "."
+
+  - id: "push-playwright-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
+
+  - id: "build-k6-service-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "services/k6-mcp/Dockerfile"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
+      - "."
+
+  - id: "push-k6-service-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
+
+  - id: "build-k6-job-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "services/k6-mcp/Dockerfile.job"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
+      - "."
+
+  - id: "push-k6-job-image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/playwright-mcp:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-mcp:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/k6-runner:${SHORT_SHA}"
+
+substitutions:
+  _REGION: "europe-central2"
+  _AR_REPOSITORY: "foral-hre"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
