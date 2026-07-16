@@ -1,0 +1,21 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: foral-hre-k6-runner
+  labels:
+    app: foral-hre
+    component: k6-runner
+spec:
+  template:
+    spec:
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: "3600"
+          containers:
+            - name: k6
+              image: REGION-docker.pkg.dev/PROJECT_ID/foral-hre/k6-runner:latest
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 1Gi
