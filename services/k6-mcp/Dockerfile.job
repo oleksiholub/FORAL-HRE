@@ -1,0 +1,4 @@
+FROM grafana/k6:1.0.0
+WORKDIR /scripts
+COPY services/k6-mcp/scripts/job-script.js /scripts/job-script.js
+ENTRYPOINT ["k6", "run", "/scripts/job-script.js"]
