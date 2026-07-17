@@ -4,6 +4,11 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY --from=k6bin /usr/bin/k6 /usr/local/bin/k6
 
+localtunnel
+RUN apt-get update && apt-get install -y nodejs npm \
+ && npm install -g localtunnel \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8080 \
@@ -20,6 +25,8 @@ RUN pip install --no-cache-dir \
       "httpx>=0.28,<1.0"
 
 COPY services/k6-mcp/app ./app
+COPY services/k6-mcp/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 RUN useradd --create-home --uid 10001 appuser \
  && mkdir -p /tmp/k6-mcp \
@@ -27,4 +34,4 @@ RUN useradd --create-home --uid 10001 appuser \
 USER appuser
 
 EXPOSE 8080
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["/app/start.sh"]
