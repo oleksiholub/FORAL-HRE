@@ -4,7 +4,6 @@ WORKDIR /app
 
 ENV NODE_ENV=production \
     PLAYWRIGHT_MCP_PORT=8080 \
-    PORT=8080 \
     HOST=0.0.0.0 \
     PLAYWRIGHT_HEADLESS=true \
     PLAYWRIGHT_BROWSER=chromium \
