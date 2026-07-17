@@ -1,14 +1,14 @@
 #!/bin/bash
+set -x 
 
-# Логгируем начало работы
-echo "Starting startup script for Playwright..."
+echo "--- STARTUP SCRIPT STARTED FOR PLAYWRIGHT ---"
 
-# Запускаем туннель
-lt --port 8080 --subdomain foral-hre-playwright-$(date +%s) &
+# Запуск туннеля
+npx localtunnel --port 8080 --subdomain foral-hre-playwright-$(date +%s) --print-url &
 
-# Ждем старта
+# Ждем 5 секунд
 sleep 5
 
-echo "Starting main application (node)..."
-# Запуск основного сервиса
+echo "--- STARTING MAIN APP (NODE) ---"
+# Запуск основного приложения
 node src/index.js
