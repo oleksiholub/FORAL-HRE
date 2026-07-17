@@ -1,5 +1,5 @@
 #!/bin/bash
 
-lt --port 8080 --subdomain foral-hre-k6 &
+lt --port 8080 --subdomain foral-hre-k6-$(date +%s) &
 
 uvicorn app.main:app --host 0.0.0.0 --port 8080
