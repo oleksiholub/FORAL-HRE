@@ -1,16 +1,14 @@
 #!/bin/bash
+set -x
 
-# Логгируем начало работы
-echo "Starting startup script for K6..."
+echo "--- STARTUP SCRIPT STARTED FOR K6 ---"
 
-# Запускаем туннель. 
-# Убираем перенаправления, Cloud Run сам всё поймает.
-# Используем команду 'lt', так как мы поставили его через npm -g
-lt --port 8080 --subdomain foral-hre-k6-$(date +%s) &
+# Запуск туннеля
+npx localtunnel --port 8080 --subdomain foral-hre-k6-$(date +%s) --print-url &
 
-# Ждем старта
+# Ждем 5 секунд
 sleep 5
 
-echo "Starting main application (uvicorn)..."
-# Запуск основного сервиса
+echo "--- STARTING MAIN APP (UVICORN) ---"
+# Запуск основного приложения
 uvicorn app.main:app --host 0.0.0.0 --port 8080
