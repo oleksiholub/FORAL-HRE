@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y nodejs npm \
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8080 \
     HOST=0.0.0.0 \
     K6_BIN=/usr/local/bin/k6 \
     K6_MCP_REQUIRE_AUTH=true \
