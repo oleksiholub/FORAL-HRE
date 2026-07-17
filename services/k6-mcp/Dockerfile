@@ -4,7 +4,7 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY --from=k6bin /usr/bin/k6 /usr/local/bin/k6
 
-localtunnel
+# Удалена строка 'localtunnel', которая вызывала ошибку парсинга
 RUN apt-get update && apt-get install -y nodejs npm \
  && npm install -g localtunnel \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
