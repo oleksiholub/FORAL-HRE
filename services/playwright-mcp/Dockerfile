@@ -1,5 +1,3 @@
-# Official Playwright image includes browser dependencies.
-# Pin major version at deploy time if needed.
 FROM mcr.microsoft.com/playwright:v1.52.0-jammy
 
 WORKDIR /app
@@ -12,16 +10,17 @@ ENV NODE_ENV=production \
     PLAYWRIGHT_BROWSER=chromium \
     PLAYWRIGHT_MCP_REQUIRE_AUTH=true
 
-# Install only this service deps (workspace-friendly copy)
 COPY package.json ./
 RUN npm install --omit=dev
 
-COPY src ./src
+RUN npm install -g localtunnel
 
-# Non-root is preferred; Playwright image user may vary by tag.
-# If permission issues appear on Cloud Run, drop USER and re-test.
+COPY src ./src
+COPY services/playwright-mcp/start.sh ./start.sh
+RUN chmod +x ./start.sh
+
 USER pwuser
 
 EXPOSE 8080
 
-CMD ["node", "src/index.js"]
+CMD ["./start.sh"]
