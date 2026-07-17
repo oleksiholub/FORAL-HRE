@@ -22,4 +22,4 @@ USER pwuser
 
 EXPOSE 8080
 
-CMD ["./start.sh"]
+CMD ["/app/start.sh"]
